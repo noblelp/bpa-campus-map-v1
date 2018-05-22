@@ -1,0 +1,682 @@
+// Documentation Reference - http://coderepo.demo.finalsite.com/the-build/sass/pages
+
+// ================================
+// BPA - Campus Map V1 - SASS
+// ================================
+
+$map-breakpoint: 900px; //if this changes, make sure to update in js file 
+
+$accent-color: $m2; //this applies to point bg color & legend numbers
+
+// Map Plot Points
+// ================================
+
+$display-numbers-in-points: true;
+$radiating-points: false;
+
+//point design
+$point-size: 24px;
+$point-font-size: 12px;
+$point-bg-color: $accent-color;
+$point-border: none;
+$point-box-shadow: 0 0 0 2px rgba($point-bg-color, .3);
+$point-number-color: #fff;
+
+//point hover design
+// $point-hover-bg-color: rgba(#fff, .9);
+$point-hover-bg-color: $accent-color;
+// $point-hover-color: $d1;
+$point-hover-color: #fff;
+$point-hover-font-size: 16px;
+$point-hover-padding: 12px 18px;
+$point-hover-border-radius: 2px;
+$point-hover-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+
+
+// Map Slideshow
+// ================================
+
+$slideshow-box-shadow: inset 0 0 0 1px $s5;
+$empty-slideshow-bg-color: $s1;
+
+//arrows
+$arrow-size: 50px;
+$arrow-bg-color: $s5;
+$arrow-hover-bg-color: $s4;
+$arrow-font-size: 30px;
+$arrow-color: #fff;
+$arrow-hover-color: #fff;
+$arrow-icon-previous: $icon-angle-left;
+$arrow-icon-next: $icon-angle-right;
+
+//title design
+$slide-title-font-family: $sans-serif;
+$slide-title-font-size: $body-font-size;
+$slide-title-line-height: $body-line-height;
+$slide-title-padding: 20px 30px;
+
+//description design
+$slide-description-font-family: $sans-serif;
+$slide-description-font-size: $body-font-size;
+$slide-description-line-height: $body-line-height;
+$slide-description-padding: 30px;
+
+
+// Map Legend
+// ================================
+
+//list item design
+$legend-number-color: $accent-color;
+$legend-number-font-size: 16px;
+$legend-item-font-family: $sans-serif;
+$legend-item-font-size: $body-font-size;
+$legend-item-line-height: $body-line-height;
+$legend-item-color: $d1;
+$legend-item-hover-color: $legend-number-color;
+
+
+.map-container {
+	position: relative;
+	overflow: hidden;
+
+	&:before {
+		content: '';
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		top: 0;
+		background-color: #fff;
+		opacity: 0;
+		visibility: hidden;
+		z-index: 10;
+		transition: .5s ease-in-out .3s;
+		display: none;
+
+		@include breakpoint($map-breakpoint) {
+			display: block;
+		}
+	}
+
+	> header {
+		position: relative;
+		.fsElementTitle {
+			#{$notComposeMode} & {
+				display: none;
+			}			
+		}
+
+		.fsElementHeaderContent {
+			margin-bottom: 0;
+
+			picture, img {
+				display: block;
+				width: 100%;
+			}
+		}
+	}
+
+	#{$notComposeMode} & {
+
+		> .fsElementContent {
+			margin: 0 auto;
+			margin-bottom: 0;
+			background-color: #fff;
+			transform: translate3d(100%, 0, 0);
+			transition: opacity .3s;
+			opacity: 0;
+			visibility: hidden;
+			display: flex;
+			flex-direction: column;
+			max-width: 540px;
+			position: relative;
+			max-height: 0;
+
+			@include breakpoint($map-breakpoint) {
+				margin: 0;
+				transition: .3s ease-in-out .3s;
+				position: absolute;
+				left: auto;
+				right: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				max-height: none;
+				z-index: 15;
+			}
+		}
+
+		&.active {
+			&:before {
+				opacity: .7;
+				visibility: visible;
+				transition: .3s;
+				
+			}
+
+			> .fsElementContent {
+				max-height: 100%;
+				transform: translate3d(0%, 0, 0);
+				opacity: 1;
+				visibility: visible;
+				transition: transform .5s ease-in-out .3s;
+				z-index: 20;
+				margin-top: 30px;
+				@include breakpoint($map-breakpoint) {
+					margin-top: 0;
+				}
+			}
+		}
+
+	}
+
+	.point-plotter & {
+		z-index: 10;
+
+		> header {
+			opacity: .5;
+		}
+	}
+}
+
+.close-map {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border-radius: 100%;
+	border: solid 2px #fff;
+	overflow: hidden;
+	background-color: rgba(#000, .2);
+	color: transparent;
+	z-index: 30;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0;
+	visibility: hidden;
+	transition: .3s;
+
+	&:before,
+	&:after {
+		content: '';
+	  @include x-y-center;
+	  content: ' ';
+	  height: 15px;
+	  width: 2px;
+	  background-color: #fff;
+	  transition: .3s;
+	}
+
+	&:before {
+	  transform: translate3d(-50%, -50%, 0) rotate(45deg);
+	}
+
+	&:after {
+	  transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+	}
+
+	&:hover, &:focus {
+		background-color: rgba(#000, .5);
+		transition: .3s;
+		&:before {
+		  transform: translate3d(-50%, -50%, 0) rotate(90deg);
+		  transition: .3s;
+		}
+
+		&:after {
+		  transform: translate3d(-50%, -50%, 0) rotate(-90deg);
+		  transition: .3s;
+		}
+	}
+
+	.active & {
+		opacity: 1;
+		visibility: visible;
+		transition: .5s;
+	}
+}
+
+
+// Map Plot Points
+// ================================
+
+.map-points {
+	#{$notComposeMode} & {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		margin-bottom: 0;
+	}
+
+	.point-plotter & {
+		z-index: -1;
+	}
+
+	> header, > footer {
+		#{$notComposeMode} & {
+			display: none;
+		}
+	}
+
+  .fsStyleDefaultList {
+    padding:0;
+    margin:0;
+
+    > li.fsListItem {
+      border: none;
+      padding: 0;
+      position: absolute;
+      margin: 0;
+      display: block;
+      counter-increment:li;
+      z-index: 2;
+      transform: translate3d(($point-size/2) * -1, ($point-size/2) * -1, 0);
+      opacity: 0;
+      visibility: hidden;
+
+      &:hover, &:focus {
+      	z-index: 5;
+      }
+
+
+      @if $radiating-points == true {
+	      &:before {
+	      	content: '';
+	      	@include x-y-center;
+			    border: 10px solid $point-bg-color;
+			    border-radius: 50%;
+			    transition: 0s ease-in 2s;
+			    display: none;
+
+			    @include breakpoint($map-breakpoint) {
+			    	display: block;
+			    	animation: radiate-point-1 4s 1s infinite ease-out, radiate-point-2 4s 1s infinite ease-out ;
+			    	transition: 0s ease-in 2s;
+			    }
+			  }
+			}
+
+      &.active-point {
+      	opacity: 1;
+      	visibility: visible;
+
+      	@include breakpoint($map-breakpoint) {
+
+      		> a {
+		      	background-color: $point-bg-color;
+		      	color: inherit;
+
+		      	> span {
+		      		opacity: 1;
+		      		visibility: visible;
+		      		transition: .5s;
+		      	}
+      		}
+      	}
+      }
+
+      @include breakpoint($map-breakpoint) {
+      	opacity: 1;
+      	visibility: visible;
+      }
+
+      #{$composeMode} & {
+      	position: relative;
+      }
+
+      > a {
+      	width: $point-size;
+      	height: $point-size;
+      	border-radius: 100%;
+      	border: $point-border;
+      	box-shadow: $point-box-shadow;
+      	background-color: $point-bg-color;
+      	text-align: center;
+      	white-space: nowrap;
+
+      	#{$composeMode} & {
+      		color: $d1;
+      	}
+
+      	&:before {
+      		display: none;
+      	}
+
+	      &:after {
+
+	      	@if $display-numbers-in-points == true {
+	      		content:counter(li);
+	      	}
+
+	      	@include x-y-center;
+	      	color: $point-number-color;
+	      	font-size: $point-font-size;
+	      	font-weight: $bold;
+	      	line-height: 1;
+	      }
+
+	      > span {
+	      	@include x-center;
+	      	display: block;
+	      	bottom: $point-size + 10px;
+	      	border-radius: $point-hover-border-radius;
+	      	background-color: $point-hover-bg-color;
+	      	box-shadow: $point-hover-box-shadow;
+	      	color: $point-hover-color;
+	      	padding: $point-hover-padding;
+	      	font-size: $point-hover-font-size;
+	      	font-weight: normal;
+	      	line-height: 1.25;
+	      	opacity: 0;
+	      	visibility: hidden;
+	      	transition: .3s;
+
+
+	      	&:after {
+	      		content: '';
+						width: 0;
+						height: 0;
+						border-style: solid;
+						border-width: 7px 6px 0 6px;
+						border-color: $point-hover-bg-color transparent transparent transparent;
+						@include x-center;
+						bottom: -7px;
+	      	}
+	      }
+
+	      &:hover, &:focus {
+	      	background-color: $point-bg-color;
+	      	color: inherit;
+
+	      	> span {
+	      		opacity: 1;
+	      		visibility: visible;
+	      		transition: .5s;
+	      	}
+	      }
+      }
+    }
+  }
+}
+
+
+// Map Slideshow
+// ================================
+
+.map-slideshow-element {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+
+	> header {
+		#{$notComposeMode} & {
+			display: none;
+		}
+	}
+
+	> .fsElementContent {
+		opacity: 0;
+		visibility: hidden;
+		transition: .3s ease-in-out .5s;
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+
+	}
+
+	&.show,
+	&.empty {
+
+		> .fsElementContent {
+			box-shadow: $slideshow-box-shadow;
+			opacity: 1;
+			visibility: visible;
+			transition: .3s;
+		}
+	}
+
+	.fsElementEmpty {
+		padding: 70px 30px 30px;
+		flex-grow: 1;
+		background: $empty-slideshow-bg-color;
+	}
+
+	.fsListItems {
+		margin: 0;
+		display: flex;
+		flex-grow: 1;
+		opacity: 0;
+		visibility: hidden;
+		transition: .5s;
+
+		&.slick-initialized {
+			opacity: 1;
+			visibility: visible;
+			transition: .5s ease-in-out .3;
+		}
+
+		article {
+			padding: 0 0 ($arrow-size + 50px);
+			margin: 0;
+
+			.fsTitle {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				bottom: 0;
+				padding: $slide-title-padding;
+				z-index: 5;
+				background-color: rgba(#000, .6);
+				color: #fff;
+				font-weight: normal;
+				font-size: $body-font-size;
+				line-height: $body-line-height;
+
+				> a {
+					color: inherit;
+					pointer-events: none;
+				}
+
+				&.fsResourceName {
+					display: none;
+				}
+			}
+
+			figure {
+				picture {
+					display: block;
+					position: relative;
+
+					img {
+						width: 100%;
+					}
+				}
+			}
+
+			figcaption {
+				margin: 0;
+				padding: 30px 30px 0;
+				font-style: normal;
+				font-size: $slide-description-font-size;
+				line-height: $slide-description-line-height;
+				font-family: inherit;
+			}
+		}
+	}
+
+	.slick-arrow {
+		position: absolute;
+		transform: translate3d(0, 0, 0);
+		top: auto;
+		right: 0;
+		bottom: 0;
+		width: $arrow-size;
+		height: $arrow-size;
+		background-color: $arrow-bg-color;
+		transition: .3s;
+		overflow: hidden;
+		white-space: nowrap;
+		color: transparent;
+		line-height: 0;
+		z-index: 20;
+		border: none;
+
+		&:before {
+			@include y-center;
+			left: 0;
+			font-family: $font-icon;
+			font-weight: normal;
+			color: $arrow-color;
+			width: 100%;
+			text-align: center;
+      font-size: $arrow-font-size;
+      transition: .3s;
+      display: inline-block;
+      line-height: 1;
+      height: auto;
+		}
+
+		&:hover, &:focus {
+			background-color: $arrow-hover-bg-color;
+			transition: .3s;
+			outline: transparent;
+			&:before {
+				color: $arrow-hover-color;
+			}
+		}
+
+		&.fsPrevButton,
+		&.slick-prev {
+			left: auto;
+			right: $arrow-size + 1px;
+
+			&:before {
+				content: $arrow-icon-previous;
+			}
+		}
+
+		&.slick-next {
+			&:before {
+				content: $arrow-icon-next;
+			}
+		}
+	}
+}
+
+
+// Map Legend
+// ================================
+
+.map-legend {
+	position: relative;
+
+  .fsStyleDefaultList {
+    padding:0;
+    margin:0;
+
+    @include breakpoint(600px) {
+    	column-gap: 20px;
+    	column-rule: 0;
+    	min-height: initial; // chrome fix
+    	column-count: 2;
+    }
+
+    &.small {
+    	column-count: 1;
+    }
+
+    &.large {
+    	@include breakpoint(1000px) {
+    		column-count: 4;
+    	}
+    }
+
+    > li.fsListItem {
+		  -webkit-column-break-inside: avoid;
+		  page-break-inside: avoid;
+		  break-inside: avoid;
+      border: none;
+      position: relative;
+      padding: 0;
+      margin: 0 0 5px;
+      display: block;
+      counter-increment:li;
+      font-family: $legend-item-font-family;
+      font-size: $legend-item-font-size;
+      line-height: $legend-item-line-height;
+      font-weight: normal;
+      color: $legend-item-color;
+
+      &:before {
+      	content:counter(li);
+      	position: absolute;
+      	left: 0;
+      	top: 0;
+      	font-weight: $bold;
+      	color: $legend-number-color;
+      	font-size: $legend-number-font-size;
+      	line-height: inherit;
+      }
+
+      > a {
+      	display: inline-block;
+      	color: inherit;
+        font-weight: inherit;
+        font-size: inherit;
+       	line-height: inherit;
+		    word-wrap: normal;
+		    word-break: normal;
+		    padding-left: 25px; 
+
+      	&:hover, &:focus {
+      		color: $legend-item-hover-color;
+      	}
+
+      	&:before {
+      		display: none;
+      	}
+      }
+    }
+  }
+}
+
+
+// Coordinate Plotting Page
+// ================================
+
+.coordinates-popup {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	z-index: 50;
+	background-color: #fff;
+	color: $d1;
+	padding: 10px;
+}
+
+
+@keyframes slideshow-transition {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes radiate-point-1 {
+  50%, 100% {
+    transform: translate3d(-50%, -50%, 0) scale(2);
+    opacity: .8;
+  }
+}
+
+@keyframes radiate-point-2 {
+  50%, 100% {
+    transform: translate3d(-50%, -50%, 0) scale(3);
+    opacity: 0;
+    padding: 5px;
+  }
+}
